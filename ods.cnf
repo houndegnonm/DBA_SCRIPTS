@@ -1,0 +1,88 @@
+[mysql]
+# CLIENT #
+port                           	= 3306
+socket                         	= /var/lib/mysql/mysql.sock
+
+[mysqld]
+# GENERAL #
+user				= mysql
+datadir				= /var/lib/mysql
+socket				= /var/lib/mysql/mysql.sock
+default-storage-engine         	= InnoDB
+pid-file			= /var/run/mysqld/mysqld.pid
+
+# MyISAM #
+key-buffer-size                	= 32M
+
+# LOGGING #
+log-error                      	= /var/log/mysql/mysql-error.log
+#log-queries-not-using-indexes 	= 1
+long_query_time                	= 60
+slow-query-log                 	= 1
+slow-query-log-file            	= /var/log/mysql/mysql-slow.log
+
+# CACHES AND LIMITS 
+tmp_table_size  		= 32M
+max_heap_table_size 		= 32M
+query_cache_type 		= 0
+query_cache_size 		= 0
+max_connections 		= 500
+max_allowed_packet 		= 1073741824
+
+sysdate-is-now                  = 1
+
+thread_cache_size 		= 50
+open-files-limit               	= 65535
+
+table-definition-cache         	= 4096
+table_open_cache 		= 10240
+
+tmpdir 				= /var/lib/mysql
+## join_buffer_size = 1M
+## query_cache_limit = 32M
+## read_buffer_size = 1M
+
+# INNODB #
+## InnoDB tweaks: http://dba.stackexchange.com/questions/27328
+
+innodb_lock_wait_timeout        = 28800
+innodb-flush-method            	= O_DIRECT
+innodb-log-files-in-group      	= 2
+innodb-file-per-table          	= 1
+innodb-buffer-pool-size        	= 30G
+
+sql_mode="NO_ENGINE_SUBSTITUTION"
+
+## Event Scheduler
+event_scheduler               = ON
+
+# AUDIT CONFIG #
+server_audit_file_rotate_size   = 1073741824
+server_audit_events             = 'CONNECT,QUERY_DDL,QUERY_DML'
+server_audit_file_path          = '/var/mysql_audit_log/server_audit.log'
+server_audit_logging            = ON
+server_audit_file_rotations     = 100
+server_audit_excl_users         = ''
+
+# Performance Review 03-20-2018
+skip_name_resolve		= "ON"
+innodb_write_io_threads		= 8 # Number of I/O threads for writes
+innodb_read_io_threads 		= 8 # Number of I/O threads for reads
+innodb-log-file-size            = 512M
+innodb_buffer_pool_instances    = 8
+sort_buffer_size                = 6291456 # 6M
+innodb-flush-log-at-trx-commit  = 2 # https://dba.stackexchange.com/questions/12611/is-it-safe-to-use-innodb-flush-log-at-trx-commit-2
+
+
+
+## Replication
+server-id         	      = 1
+log_bin                       = /var/log/mysql/mysql-bin.log
+log-bin-index                 = /var/log/mysql/mysql-bin.index
+binlog_format                 = MIXED
+max_binlog_size               = 104857600 # 100MB
+sync_binlog                   = 1
+expire_logs_days              = 2
+## slave-skip-errors          = 1062, 1032
+## super_read_only            = 1
+

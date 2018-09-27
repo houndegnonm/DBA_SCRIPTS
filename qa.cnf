@@ -1,0 +1,69 @@
+[client]
+port                           = 3306
+socket                         = /var/lib/mysql/mysql.sock
+
+[mysql]
+# CLIENT #
+port                           = 3306
+socket                         = /var/lib/mysql/mysql.sock
+
+[mysqld]
+# GENERAL #
+user                           = mysql
+default-storage-engine         = InnoDB
+socket                         = /var/lib/mysql/mysql.sock
+pid-file                       = /var/run/mysqld/mysqld.pid
+
+# MyISAM #
+key-buffer-size                = 32M
+#myisam-recover                 = FORCE,BACKUP
+#sort_buffer_size	       = 256K
+
+
+# SAFETY #
+max-allowed-packet             = 16M
+
+# DATA STORAGE #
+datadir                        = /var/lib/mysql/
+
+# CACHES AND LIMITS #
+tmp-table-size                 = 32M
+max-heap-table-size            = 32M
+query-cache-type               = 0
+query-cache-size               = 0
+max-connections                = 500
+thread-cache-size              = 50
+open-files-limit               = 65535
+table-definition-cache         = 4096
+table-open-cache               = 10240
+
+# INNODB #
+innodb-flush-method            = O_DIRECT
+innodb-log-files-in-group      = 2
+innodb-log-file-size           = 256M
+innodb-flush-log-at-trx-commit = 1
+innodb-file-per-table          = 1
+innodb-buffer-pool-size        = 5G
+#innodb_buffer_pool_instances  = 4
+
+# LOGGING #
+log-error                      = /var/log/mysql/mysql-error.log
+long_query_time                = 60
+slow-query-log                 = 1
+slow-query-log-file            = /var/log/mysql/mysql-slow.log
+
+
+# Replication
+server-id          	      = 1
+log_bin          	      = /var/log/mysql/mysql-bin.log
+binlog_format                 = MIXED
+max_binlog_size               = 1073741824 # 1GB
+sync_binlog                   = 1
+expire-logs-days              = 2
+
+
+event_scheduler               	= OFF
+sql_mode			= "NO_ENGINE_SUBSTITUTION"
+
+
+

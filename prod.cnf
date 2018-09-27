@@ -1,0 +1,4 @@
+[client]
+host="pm360-production2.mysql.database.azure.com"
+user="mysqldbuser@pm360-production2"
+password="4geD1yXoe2fS5obpp34G"
