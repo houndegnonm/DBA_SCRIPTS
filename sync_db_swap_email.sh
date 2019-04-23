@@ -1,14 +1,14 @@
 # Script folder full path
-path="/home/corey/dba/DBA"
+path="/root/script"
+
 # PRODUCTION DB CONFIG
 prod_config_file=$path/"prod.cnf"
 prod_db="amsdb"
 
 # DEV DB CONFIG
 dev_config_file=$path/"dev.cnf"
-dev_db="integration_test"
+dev_db="amsdb_test"
 dev_email_suffix="@premiummedia360.com"
-ftp_dummy_data="ftp.dev" #this dummy data will be replace in ftp Host, user, password where the table is adsuppliers
 
 echo "########## started table dump from Production($prod_db) to Dev($dev_db) on  $(date)"
 echo "########## retrieve list of tables in $prod_db DB "
@@ -35,20 +35,6 @@ do
 	
 	echo "copy table $table_name into Dev($dev_db) DB"	
 	mysql --defaults-extra-file=$dev_config_file $dev_db < $path/$table_name.sql
-	
-	# if table is adsuppliers remove ftp configuration
-	if [ "$table_name" = "adsuppliers" ] 
-	then
-		grep -E -o "\bftp+\.[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" $table_name.sql | while read real_ftp_address;
-		do
-			echo "replacing ftp parameters for '$real_ftp_address' with '$ftp_dummy_data' from $dev_db.$table_name table"
-			mysql --defaults-extra-file=$dev_config_file -e"UPDATE $dev_db.$table_name SET 
-									al_post_ftp_address='$ftp_dummy_data', al_post_ftp_username='$ftp_dummy_data', al_post_ftp_password='$ftp_dummy_data',
-									ma_ftp_address='$ftp_dummy_data', ma_ftp_username='$ftp_dummy_data', ma_ftp_password='$ftp_dummy_data'
-									WHERE al_post_ftp_address='$real_ftp_address';"
-		done
-	fi
-	
 	rm -rf $path/$table_name.sql
 	echo "***** Table $table_name is now completed on  $(date) "
 	echo ""

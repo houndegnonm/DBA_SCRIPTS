@@ -1,7 +1,9 @@
 user="mhoundegnon"
 pwd="PasS123"
+qa_router_host="192.168.157.152"
+path="/root/script"
 
-mysql -u$user -p$pwd -se " SELECT * FROM data_transfer.table_config WHERE hidden=0 ;" | while read results; 
+mysql --defaults-extra-file="$path/connection.cnf" -h$qa_router_host -se " SELECT * FROM data_transfer.table_config WHERE hidden=0 ;" | while read results; 
 do
 	echo  " *** $source_schema.$table_name "
 	row=(${results[0]})
@@ -35,10 +37,10 @@ do
 	if [[ "$sync_structure" == "1" ]]; then
 		echo  " *** Structure Change"
 		sql_file="$table_name.sql"
-		mysql -u$user -p$pwd -h$destination_host -e "DROP TABLE IF EXISTS $destination_schema.$table_name; "
-		mysqldump --skip-lock-tables --no-data --skip-opt --skip-comments --compact  -u$user -p$pwd -h$source_host $source_schema $table_name > $sql_file
+		mysql --defaults-extra-file="$path/connection.cnf" -h$destination_host -e "DROP TABLE IF EXISTS $destination_schema.$table_name; "
+		mysqldump --defaults-extra-file="$path/connection.cnf"  --skip-lock-tables --no-data --skip-opt --skip-comments --compact --add-drop-trigger  --triggers -h$source_host $source_schema $table_name > $sql_file
 		sed -i 's/CREATE TABLE/CREATE TABLE IF NOT EXISTS/g' $sql_file
-		mysql -u$user -p$pwd -h$destination_host $destination_schema < $sql_file
+		mysql --defaults-extra-file="$path/connection.cnf"  -h$destination_host $destination_schema < $sql_file
 	fi
 	
 	# remove the dump from source and destination before generated new one
@@ -51,20 +53,19 @@ do
 	# exit 1
 	if [[ "$where" != "" ]]; then
 		echo  " *** Generate dump on source DB Server "
-		mysql -u$user -p$pwd -h$source_host -e"
+	 	mysql --defaults-extra-file="$path/connection.cnf" -h$source_host -e"
                         SELECT *
                                 INTO OUTFILE '/var/lib/mysql-files/$table_name.txt'
                         FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
                         LINES TERMINATED BY '\n'
                         FROM $source_schema.$table_name
                         $where
-		"
-		
+		"	
 		echo  " *** Copy dump to destination "
 		scp root@$source_host:/var/lib/mysql-files/$table_name.txt /var/lib/mysql-files/$table_name.txt
 		
 		echo  " *** Load dump into destination"
-		mysql -u$user -p$pwd -h$destination_host -e"
+		mysql --defaults-extra-file="$path/connection.cnf"  -h$destination_host -e"
                         LOAD DATA INFILE '/var/lib/mysql-files/$table_name.txt'
 		        INTO TABLE $destination_schema.$table_name
 		        FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n';
@@ -72,7 +73,7 @@ do
 		# pt-table-sync --where "$where" --nocheck-triggers --execute h=$source_host,u=$user,p=$pwd,D=$source_schema,t=$table_name h=$destination_host,u=$user,p=$pwd,D=$destination_schema,t=$table_name
 	else
 		echo  " *** Generate dump on source DB Server "
-		mysql -u$user -p$pwd -h$source_host -e"
+		mysql --defaults-extra-file="$path/connection.cnf"  -h$source_host -e"
 			SELECT *
 			        INTO OUTFILE '/var/lib/mysql-files/$table_name.txt'
 			FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
@@ -84,7 +85,7 @@ do
 		scp root@$source_host:/var/lib/mysql-files/$table_name.txt /var/lib/mysql-files/$table_name.txt
 		
 		echo  " *** Load dump into destination"
-                mysql -u$user -p$pwd -h$destination_host -e"
+                mysql --defaults-extra-file="$path/connection.cnf" -h$destination_host -e"
                         LOAD DATA INFILE '/var/lib/mysql-files/$table_name.txt'
                         INTO TABLE $destination_schema.$table_name
                         FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n';
