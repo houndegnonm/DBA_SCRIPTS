@@ -1,0 +1,79 @@
+**** Create table instruction 
+CREATE TABLE `test_db`.`person` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NULL,
+  `LasName` VARCHAR(45) NULL,
+  `dob` DATE NULL,
+  PRIMARY KEY (`id`));
+  
+**** alter table instruction change lasName to lastName and add index on fistName field 
+ALTER TABLE test_db.person CHANGE COLUMN LasName LastName VARCHAR(45) NOT NULL, ADD INDEX idx_firstName (firstName ASC);
+
+***** CREATE USER
+CREATE USER 'mikael'@'%' IDENTIFIED BY 'PasS123'; 	# Create a new User
+GRANT ALL ON *.* TO 'mikael'@'%';					# Assigned Privileges
+FLUSH PRIVILEGES;												# Tell the server to reload the grant tables
+
+***** REVOKE PRIVILEGES ON USER
+REVOKE  SELECT,INSERT,UPDATE ON test_db.* FROM 'mhoundegnon'@'192.168.1.82';
+FLUSH PRIVILEGES;
+
+***** SHOW PRIVILEGES FOR A SPECIFIC USER
+SHOW GRANTS FOR 'mhoundegnon'@'192.168.1.82'
+
+
+***** Replication
+server-id                     = 1
+log_bin                       = /var/log/mysql/mysql-bin.log
+log-bin-index                 = /var/log/mysql/mysql-bin.index
+binlog_format                 = MIXED
+max_binlog_size               = 104857600 # 100MB
+sync_binlog                   = 1
+expire_logs_days              = 2
+## slave-skip-errors          = 1062, 1032
+## super_read_only            = 1
+
+
+***** Change definer of all Routines (Storage Procedure/Function) 
+* Storage Function and Routine are very easy to change since we are allow to uptable mysql.proc table we just to change the definer column in that table :)
+* UPDATE mysql.proc SET definer='newUser@host' where definer!='oldUser@host' and db in ('database');
+
+***** Change definer of all EVENT 
+* Events are closest to this as ALTER EVENT does support changing the definer, 
+* but it also requires that at least one other event attribute gets changed at the same time, in my case COMMENT is the other attribute:
+select CONCAT("ALTER DEFINER='root'@'localhost' EVENT ", EVENT_SCHEMA,".",EVENT_NAME, " COMMENT '';") from information_schema.events;
+
+
+***** Change definer of all View 
+* ALTER VIEW also allows to change the definer, but here you also need to repeat the views AS SELECT.
+* Fortunately these extra settings can be extracted from the information schema, so while a bit of extra work is required it is at least easily scriptable.
+
+SELECT CONCAT("ALTER DEFINER=`root`@`localhost` VIEW ", TABLE_SCHEMA,".",TABLE_NAME, " AS ", VIEW_DEFINITION, ";") FROM information_schema.views  where TABLE_SCHEMA not in ('sys');
+
+***** Change definer of all Triggers 
+* At this point triggers don't even have an ALTER TRIGGER or UPDATE Statement at all.
+* So here we have to fall back to extracting the object CREATE statement with SHOW CREATE or mysqldump replace the DEFINER (its fortunately in a fixed position within the SHOW CREATE output), add the drop trigger clause to recreate it right away.
+* This DROP/CREATE approach obviously opens up the opportunity for a race condition. We can take care of this by locking the triggers base table with LOCK TABLES ... WRITE, preventing table data to change and also the old trigger invocations.
+* Below example use mysqldump
+
+mysqldump -umhoundegnon -p --triggers --add-drop-trigger --no-create-info --no-data --no-create-db --skip-opt --all-databases --skip-comments --compact > /root/script/triggers.sql
+select distinct DEFINER from information_schema.triggers;
+sed -i 's/\`//g' triggers.sql
+sed -i 's/jshahrw/root/g' triggers.sql
+sed -i 's/bmccullah/root/g' triggers.sql
+mysql -u mhoundegnon -p < triggers.sql
+
+
+
+# MySQL SLAP
+mysqlslap --query="select * from information_schema.processlist;"  --concurrency=200 --iterations=2
+  
+# PT TABLE CHECKSUM
+pt-table-checksum --replicate percona.checksums --replicate-check-only --no-check-binlog-format h=192.168.157.104,u=mhoundegnon,p=PasS123 --ignore-databases=mysql
+
+# PT TABLE SYNC
+pt-table-sync  --nocheck-triggers --execute h=192.168.157.104,u=mhoundegnon,p=PasS123,D=freeosk,t=ods_settings h=192.168.157.105,u=mhoundegnon,p=PasS123,D=freeosk,t=ods_settings
+
+ pt-table-sync --nocheck-triggers --execute --replicate=percona.checksums  --sync-to-master  h=192.168.157.107,u=mhoundegnon,p=PasS123
+
+

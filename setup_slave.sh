@@ -13,7 +13,9 @@ fix_error() {
                 mysql -u mhoundegnon -p"PasS123" -e"STOP SLAVE;"
                 mysql -u mhoundegnon -p"PasS123" -e"SET GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;"
                 mysql -u mhoundegnon -p"PasS123" -e"START SLAVE;"
-                error=$(mysql -u mhoundegnon -p"PasS123" -e"show slave status \G" | grep Slave_SQL_Running: | sed 's/[:] */&\n/g' | tail -n 1)
+                # sleep 1s
+		error=$(mysql -u mhoundegnon -p"PasS123" -e"show slave status \G" | grep Slave_SQL_Running: | sed 's/[:] */&\n/g' | tail -n 1)
+		
         done
         exit 1
 }
@@ -306,7 +308,7 @@ setup_slave() {
 	sudo yum install pmm-client
 	rm -f /etc/my.cnf
 	sudo yum localinstall https://dev.mysql.com/get/mysql57-community-release-el6-11.noarch.rpm
-	sudo yum -x Percona-Server-* install mysql-community-server
+	sudo yum  install mysql-community-server
 	sudo yum -x Percona-Server-* install percona-xtrabackup-24
 	echo "--------- $(date) End of Package Installation " >> /root/script/install.log
 
@@ -339,7 +341,7 @@ setup_slave() {
 	rm -rf /var/lib/mysql.back
 	cp -r  /var/lib/mysql /var/lib/mysql.back
 	rm -rf /var/lib/mysql/*
-	cp -r  /var/db_backups/full/* /var/lib/mysql
+	sudo mv  /var/db_backups/full/* /var/lib/mysql/
 
 	echo "--------- $(date) Change data directory owner to mysql " >> /root/script/install.log
 	sudo chown -R mysql:mysql /var/lib/mysql
@@ -383,13 +385,15 @@ case $server in
 		ip_slave="192.168.157.102"
         ;;
         "prod")
-                ip_address="69.40.217.151"
+                ip_address="69.40.217.148"
+		ip_slave="192.168.157.104"
         ;;
         "edw")
                 ip_address="69.40.217.151"
         ;;
         "ods")
-                ip_address="69.40.217.151"
+                ip_address="69.40.217.153"
+		ip_slave="192.168.157.106"
         ;;
         *) 
 		echo "invalid option"

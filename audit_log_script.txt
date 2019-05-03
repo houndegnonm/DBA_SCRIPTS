@@ -1,0 +1,45 @@
+sed -Ee :1 -e "s/^(([^',]|'[^']*')*),/\1|/;t1" <
+
+
+20180923 07:00:02,prod-madb,freeosk,192.168.157.153,196045,628794603,QUERY,freeosk,'update ods_kiosks_in_error set time_error_cleared=null, causal_event_id=-1, causal_event_time=\'2018-09-23 06:59:52\' where kiosk_id=31 and state_machine_id=7',0
+
+20180923 07:00:02|prod-madb|freeosk|192.168.157.153|196045|628794603|QUERY|freeosk|'update ods_kiosks_in_error set time_error_cleared=null, causal_event_id=-1, causal_event_time=\'2018-09-23 06:59:52\' where kiosk_id=31 and state_machine_id=7'|0
+
+
+20181110 00:50:56,prod-odsmadb,freeosketl,192.168.157.153,205469091,7201452439,QUERY,ods,'insert into /* ODS_ETL */ products (products.id, products.name, products.company_id, products.created_at, products.updated_at, products.brand_id, products.image, products.image_file_name, products.image_content_type, products.image_file_size, products.image_updated_at, products.upc, products.public_name, products.public_description, products.public_show_on_mobile, products.public_photo_file_name, products.public_photo_content_type, products.public_photo_file_size, products.public_photo_updated_at) values (1214,\'Pop Secret Homestyle Microwave Popcorn, 3ct\',119,\'2017-11-01 14:55:08\',\'2017-11-01 14:55:08\',368,null,null,null,null,null,\'002389624680\',\'\',\'\',0,null,null,null,null) ON DUPLICATE KEY UPDATE products.id = VALUES(id), products.name = VALUES(name), products.company_id = VALUES(company_id), products.created_at = VALUES(created_at), products.updated_at = VALUES(updated_at), products.brand_id = VALUES(brand_id), products.image = VALUES(image), products.image_file_name = VALUES(image_file_name), p',0
+
+
+
+rewriteBatchedStatements t
+useServerPrepStmts f
+autoReconnect t
+interactiveClient t
+useCompression t
+useSSL f
+
+
+line=$(cat server_audit_new.log)
+echo ${#line}
+
+
+position=$(cat server_audit_new.log | grep -aob "'" | head -1 | cut -d':' -f 1)
+
+cat server_audit_new.log | cut -c89-1120
+
+
+
+cat server_audit.log |  while read results; 
+do 
+	line=$(echo $results)
+	echo ${#line}
+done
+
+
+year=$("${field[0]}" | cut -c1-4)
+        month=$("${field[0]}" | cut -c5-2)
+        day=$("${field[0]}" | cut -c7-2)
+		
+		
+20181110 00:50:56
+
+20181110 00:50:56,prod-odsmadb,pmm,localhost,205500766,0,DISCONNECT,,,0

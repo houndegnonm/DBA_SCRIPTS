@@ -1,0 +1,98 @@
+**** Create Linux User
+sudo groupadd wheel
+useradd mhoundegnon1
+passwd mhoundegnon1
+usermod -aG wheel mhoundegnon1
+usermod -g groupname mhoundegnon1 #change the primary group a user is assigned to
+groups #View the Groups a User Account is Assigned To
+
+******* Install MySQL Community edition 8 on Ubuntu
+wget -c https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb # download repository
+sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb 						# install repository 
+sudo apt update														# update librairies
+sudo apt-get install mysql-server									# install mysql server CE
+sudo mysql_secure_installation										# secure install
+sudo systemctl status mysql											# mysql status
+sudo systemctl enable mysql											# enable mysql to start at system boot
+
+******* Install MySQL Community edition 8 on CentOS and Red Hat (RHEL)
+yum localinstall https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm  	## CentOS 7 and Red Hat (RHEL) 7 ##
+yum localinstall https://dev.mysql.com/get/mysql80-community-release-el6-1.noarch.rpm  	## CentOS 6 and Red Hat (RHEL) 6 ##
+yum install mysql-community-server
+
+mysqld_safe --user=mysql --datadir=/var/lib/mysql/
+
+/etc/init.d/mysqld --defaults-file=/etc/my.cnf  --datadir=/var/lib/mysql --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/lib/mysql/mysql.sock --log-error=/var/log/mysql/mysql-error.log
+
+/usr/sbin/mysqld --defaults-file=/etc/my.cnf  --datadir=/var/lib/mysql --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/lib/mysql/mysql.sock --log-error=/var/log/mysql/mysql-error.log
+
+
+******* Install Percona Server 5.7 on ubuntu
+wget https://repo.percona.com/apt/percona-release_0.1-6.$(lsb_release -sc)_all.deb		# Fetch the repository packages from Percona web
+sudo dpkg -i percona-release_0.1-6.$(lsb_release -sc)_all.deb 		# Install the downloaded package with dpkg
+sudo apt-get update													# Remember to update the local cache
+sudo apt-get install percona-server-server-5.7						# After that you can install the server package
+
+******* Install Percona Server 5.7 on CentOS and Red Hat (RHEL)
+yum install http://www.percona.com/downloads/percona-release/redhat/0.1-6/percona-release-0.1-6.noarch.rpm		# Install the Percona repository
+yum list | grep percona																							# Testing the repository
+yum install Percona-Server-server-57																			# Install the server package
+
+******* Install MySQL Community edition 5.7 on CentOS and Red Hat (RHEL)
+sudo yum localinstall https://dev.mysql.com/get/mysql57-community-release-el6-11.noarch.rpm
+sudo yum -x Percona-Server-* install mysql-community-server
+sudo yum -x Percona-Server-* install percona-xtrabackup-24
+		
+		
+******* Replication
+#1 save master position
+mysql -u mhoundegnon -p"PasS123"  -e "SHOW Master status \G" | ssh mhoundegnon1@192.168.1.64 " cat - > /home/mhoundegnon1/master.info "
+
+
+echo "# DBA_SCRIPTS" >> README.md
+git clone https://github.com/houndegnonm/DBA_SCRIPTS.git .
+git pull https://houndegnonm:DV14HArrison@github.com/houndegnonm/DBA_SCRIPTS.git master
+git push https://houndegnonm:DV14HArrison@github.com/houndegnonm/DBA_SCRIPTS.git master
+
+
+******* Remove a package without it dependencies
+rpm -e --nodeps "mysql80-community-release"
+
+
+
+**** Uninstall remove mysql
+sudo apt-get remove --purge mysql-server mysql-client mysql-common -y 
+sudo apt-get autoremove autoclean -y
+rm -rf /etc/mysql
+sudo find / -iname 'mysql*' -exec rm -rf {} \;
+
+
+sync; echo 1 > /proc/sys/vm/drop_caches # clear the cache
+echo 1 > /proc/sys/vm/swappiness		# empty used swap
+swapoff -a && swapon -a & # disabled  an enabled swapp
+
+
+pigz -d 2018-11-05.xbstream.gz
+xbstream -x < 2018-11-05.xbstream
+
+# check iostat
+pt-diskstats  --interval 5
+
+
+%s/stringTosearch/stringToreplace/g
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
