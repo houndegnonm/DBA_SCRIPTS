@@ -36,7 +36,8 @@ sudo apt-get install percona-server-server-5.7						# After that you can install
 ******* Install Percona Server 5.7 on CentOS and Red Hat (RHEL)
 yum install http://www.percona.com/downloads/percona-release/redhat/0.1-6/percona-release-0.1-6.noarch.rpm		# Install the Percona repository
 yum list | grep percona																							# Testing the repository
-yum install Percona-Server-server-57																			# Install the server package
+yum install Percona-Server-server-57	# Install the server package
+yum install Percona-Server-server-57*5.7.25* Percona-Server-client-57*5.7.25* Percona-Server-shared-57*5.7.25* Percona-Server-shared-compat-57*5.7.25* # install specific version 5.7.25
 
 ******* Install MySQL Community edition 5.7 on CentOS and Red Hat (RHEL)
 sudo yum localinstall https://dev.mysql.com/get/mysql57-community-release-el6-11.noarch.rpm
