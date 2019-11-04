@@ -85,8 +85,9 @@ pt-diskstats  --interval 5
 
 
 
-
-
+# install docker
+sudo yum install http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm
+yum install docker-ce.x86_64
 
 
 
