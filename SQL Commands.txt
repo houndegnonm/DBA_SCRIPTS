@@ -1,3 +1,6 @@
+# list all default mysql config files
+/usr/sbin/mysqld --verbose --help | grep -A 1 "Default options"
+
 **** Create table instruction 
 CREATE TABLE `test_db`.`person` (
   `id` INT NOT NULL AUTO_INCREMENT,
