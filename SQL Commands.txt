@@ -79,4 +79,9 @@ pt-table-sync  --nocheck-triggers --execute h=192.168.157.104,u=mhoundegnon,p=Pa
 
  pt-table-sync --nocheck-triggers --execute --replicate=percona.checksums  --sync-to-master  h=192.168.157.107,u=mhoundegnon,p=PasS123
 
+watch "mysql -e'select ID, user, host, time from information_schema.processlist where user not in (\"system user\", \"replication\", \"pmm\", \"proxysql_monitor\", \"root\") order by time desc; select count(*) mysql_backend_count from information_schema.processlist where user not in (\"system user\", \"replication\", \"pmm\", \"proxysql_monitor\", \"root\")'; echo ' ######### PROXYSQL ########' ;  mysql --login-path=proxysql -e'select user,srv_host,idle_ms/1000 time from stats_mysql_free_connections order by time desc; select count(*) proxysql_pool_count from stats_mysql_free_connections; select user,srv_host,time_ms/1000 time from stats_mysql_processlist order by time desc; select count(*) proxysql_processlist_count from stats_mysql_processlist' "
 
+
+
+
+watch "mysql -e' select count(*) mysql_backend_count from information_schema.processlist where user not in (\"system user\", \"replication\", \"pmm\", \"proxysql_monitor\", \"root\")'; echo ' ######### PROXYSQL ########' ;  mysql --login-path=proxysql -e'select count(*) proxysql_pool_count from stats_mysql_free_connections; select count(*) proxysql_processlist_count from stats_mysql_processlist' "
