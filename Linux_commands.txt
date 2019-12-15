@@ -94,14 +94,24 @@ yum install docker-ce.x86_64
 for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file; done | sort -k 2 -n -r | less
 
 
+#pmm-server Install 
+docker pull percona/pmm-server:2
+docker create    -v /srv    --name pmm-data    percona/pmm-server:2 /bin/true
+docker run -d    -p 80:80    -p 443:443    --volumes-from pmm-data    --name pmm-server    --restart always    percona/pmm-docker ps
+  
+#pmm-server uninstall 
+docker ps
+docker stop pmm-server
+docker rm pmm-server
+docker rm pmm-data
 
 #pmm-client
 sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 yum install pmm2-client
 
-pmm-admin config --server-insecure-tls --server-url=https://admin:PasS123@ip-172-31-0-210:443 --force ip-172-31-15-216 generic  Elevacity_Node3
+pmm-admin config --server-insecure-tls --server-url=https://admin:PasS123@ip-172-31-0-210:443 --force ip-172-31-15-216 generic  ElevacityNode3
 
-pmm-admin add mysql --query-source=slowlog --username=pmm --password='DV14H@rrison' 
+pmm-admin add mysql --query-source=slowlog --username=pmm --password="DV14H@rrison" mysql-node3
 
 
 
