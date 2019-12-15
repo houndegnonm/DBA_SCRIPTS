@@ -95,7 +95,13 @@ for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print "
 
 
 
+#pmm-client
+sudo yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+yum install pmm2-client
 
+pmm-admin config --server-insecure-tls --server-url=https://admin:PasS123@ip-172-31-0-210:443 --force ip-172-31-15-216 generic  Elevacity_Node3
+
+pmm-admin add mysql --query-source=slowlog --username=pmm --password='DV14H@rrison' 
 
 
 
