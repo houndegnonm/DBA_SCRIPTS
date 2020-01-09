@@ -1,5 +1,5 @@
 user="mhoundegnon"
-pwd="PasS123"
+pwd=""
 meta_host="192.168.157.106"
 folderName=$( date '+%Y-%m-%d' )
 file_prefix=$( date '+%Y' )
