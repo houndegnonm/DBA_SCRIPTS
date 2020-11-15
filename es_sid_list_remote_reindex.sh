@@ -4,14 +4,14 @@
 
 
 file="es_sid_list_reindex_file.txt"
-username_old_cluster='mikael_gbai'
-password_old_cluster='9jj!8O!e94Sl4Yz6'
-hostname_old_cluster='https://es-cdr-prod67x.dialogtech.com'
-hostname_remote_reindex="https://es-cdr-prod67X.dialogtech.com:443"
+username_old_cluster=''
+password_old_cluster=''
+hostname_old_cluster=''
+hostname_remote_reindex=""
 
-username_new_cluster='sumgbai'
-password_new_cluster='.YP}4R4:sx>.frTL'
-hostname_new_cluster='https://elasticsearch-cdr.dialogtech.com'
+username_new_cluster=''
+password_new_cluster=''
+hostname_new_cluster=''
 i=0
 sid_list=""
 while IFS= read -r sid
