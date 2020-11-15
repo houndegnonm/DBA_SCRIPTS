@@ -5,9 +5,9 @@
 
 file="task_list.txt"
 
-username_new_cluster='sumgbai'
-password_new_cluster='GkdERckjGxFpyg8Q'
-hostname_new_cluster='https://elasticsearch-cdr.dialogtech.com'
+username_new_cluster=''
+password_new_cluster=''
+hostname_new_cluster=''
 
 while IFS= read -r task
 do
