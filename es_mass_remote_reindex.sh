@@ -15,16 +15,16 @@ then
 fi
 
 file="es_remote_reindex_file.txt"
-username_old_cluster=''
-password_old_cluster=''
-hostname_old_cluster=''
-hostname_remote_reindex=""
+username_old_cluster='mikael_gbai'
+password_old_cluster='9jj!8O!e94Sl4Yz6'
+hostname_old_cluster='https://es-cdr-prod67x.dialogtech.com'
+hostname_remote_reindex="https://es-cdr-prod67X.dialogtech.com:443"
 
-username_new_cluster=''
-password_new_cluster=''
-hostname_new_cluster=''
+username_new_cluster='sumgbai'
+password_new_cluster='GkdERckjGxFpyg8Q'
+hostname_new_cluster='https://elasticsearch-cdr.dialogtech.com'
 
-prefix_to_trim='v2_, v3_'
+prefix_to_trim='v1_, v2_, v3_'
 not_found_string="no such index"
 
 
@@ -104,7 +104,15 @@ case $type_reindex in
            done 
            echo "" >> es_remote_reindex_task.log
            end_time=$(date "+%m/%d/%Y %T")
-           echo "#### END OF 2nd REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+
+           error=$(echo $task_info | jq ".error")
+           if [[ $error == "null" ]]; then
+              echo "#### SUCCESS - END OF 2nd REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+           else 
+              echo "#### FAIL    - END OF 2nd REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+           fi  
+
+           
           
         done < "$file"
         exit
@@ -199,7 +207,13 @@ case $type_reindex in
                
                end_time=$(date "+%m/%d/%Y %T")
                echo "DOCUMENT COUNT MATCH $new_index_doc_count / $old_index_doc_count" >> es_remote_reindex_task.log
-               echo "#### END OF REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+
+               error=$(echo $task_info | jq ".error")
+               if [[ $error == "null" ]]; then
+                  echo "#### SUCCESS - END OF REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+               else 
+                  echo "#### FAIL - END OF REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+               fi  
                
                # change the setting when re-index is done
                curl -u $username_new_cluster:$password_new_cluster -XPUT $hostname_new_cluster/$index_new_cluster/_settings -H 'Content-Type: application/json'  -d '{
@@ -270,7 +284,14 @@ case $type_reindex in
              done 
              echo "" >> es_remote_reindex_task.log
              end_time=$(date "+%m/%d/%Y %T")
-             echo "#### END OF 2nd REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+
+             error=$(echo $task_info | jq ".error")
+             if [[ $error == "null" ]]; then
+                echo "#### SUCCESS - END OF 2nd REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+             else 
+                echo "#### FAIL - END OF 2nd REMOTE REINDEXING $index_old_cluster => $index_new_cluster AT $end_time" >> es_remote_reindex_task.log
+             fi  
+             
           fi 
           
         done < "$file"

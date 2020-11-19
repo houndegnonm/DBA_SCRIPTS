@@ -3,14 +3,14 @@
 # This script also requires jq library in order to parse JSON output you can install it on your local machine with "brew install jq"
 
 file="es_remote_reindex_file.txt"
-username_old_cluster=''
-password_old_cluster=''
-hostname_old_cluster=''
-hostname_remote_reindex=""
+username_old_cluster='mikael_gbai'
+password_old_cluster='9jj!8O!e94Sl4Yz6'
+hostname_old_cluster='https://es-cdr-prod67x.dialogtech.com'
+hostname_remote_reindex="https://es-cdr-prod67X.dialogtech.com:443"
 
-username_new_cluster=''
-password_new_cluster=''
-hostname_new_cluster=''
+username_new_cluster='sumgbai'
+password_new_cluster='GkdERckjGxFpyg8Q'
+hostname_new_cluster='https://elasticsearch-cdr.dialogtech.com'
 
 prefix_to_trim='v2_, v3_'
 not_found_string="no such index"

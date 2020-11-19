@@ -5,9 +5,9 @@
 
 file="task_list.txt"
 
-username_new_cluster=''
-password_new_cluster=''
-hostname_new_cluster=''
+username_new_cluster='sumgbai'
+password_new_cluster='GkdERckjGxFpyg8Q'
+hostname_new_cluster='https://elasticsearch-cdr.dialogtech.com'
 
 while IFS= read -r task
 do
@@ -32,7 +32,7 @@ do
   if [[ $error == "null" ]]; then
     echo "Successful $task_id start at : $start_date $start_time finish at $start_date $end_time  " >> es_task_status.log
   else 
-        echo "failed $task_id  " >> es_task_status.log
+        echo "failed $task_id start at : $start_date $start_time finish at $start_date $end_time  " >> es_task_status.log
   fi  
   
 done < "$file"
